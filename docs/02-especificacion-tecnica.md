@@ -238,7 +238,7 @@ Detalle completo en [04-privacidad-y-redaccion.md](04-privacidad-y-redaccion.md)
 - **Servidor MCP (F3)**: `mxbank mcp` expone `extract_statement`, `detect_statement`, `audit_text`, `get_schema` reutilizando el mismo núcleo. El servidor recibe rutas locales, no contenido.
 - La salida incluye `schema_version` y un bloque `privacy` para que la IA sepa qué fue omitido y no "invente" datos.
 
-## 11. Estado de implementación (v0.1.0)
+## 11. Estado de implementación (v0.2.0)
 
 | Componente | Estado |
 |---|---|
@@ -247,6 +247,7 @@ Detalle completo en [04-privacidad-y-redaccion.md](04-privacidad-y-redaccion.md)
 | BanCoppel cuenta de débito (layout 2025.1) | ✅ 1/1 estado real conciliado, totales y saldos por renglón correctos |
 | BBVA tarjeta de crédito (layout 2025.1) | ✅ 4/4 estados reales conciliados con el saldo de cargos regulares; bloque `credit`, planes a meses, tipo de cambio, parcialidades |
 | Redacción (estructural, diccionario, patrones), seudónimos HMAC, escáner residual fail‑closed | ✅ |
+| Identificadores estables `statement_id`, `transactions[].id`, `installment_plans[].id` (schema 1.1) | ✅ docs/03 §7 |
 | Perfiles `minimal` / `standard` / `strict` | ✅ (diferencias en §6 de docs/04) |
 | `--consolidate`, parser genérico (`generic`), generalización de fechas/montos, OCR, NER, servidor MCP, tarjetas de otros bancos | ⏳ |
 

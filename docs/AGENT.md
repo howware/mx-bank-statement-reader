@@ -45,6 +45,17 @@ Opciones útiles de `extract`: `--privacy strict`, `--include-concepts`, `--pseu
 - `credit` (solo tarjetas): límite, disponible, fecha de corte, fecha límite de pago, pago mínimo, pago para no generar intereses, CAT y tasa.
 - `installment_plans[]` (solo tarjetas): compras a meses con su saldo pendiente.
 - `privacy`: qué se eliminó o seudonimizó (conteos, nunca valores).
+- `statement_id`, `transactions[].id`, `installment_plans[].id`: identificadores estables (schema 1.1). Ver abajo.
+
+## Importar sin duplicar
+
+Para guardar movimientos en una base propia (p. ej. SQLite de solo agregado) y poder reimportar estados o importar estados que se enciman:
+
+1. Usa **siempre la misma llave**: `--pseudonym-key-env MXBANK_KEY`. Confirma que `privacy.pseudonym_scope` sea `"key"`; si es `"run"`, los ids cambian en cada ejecución y **no deben guardarse**.
+2. Usa `transactions[].id` como llave primaria del movimiento e inserta solo los que no existan (`INSERT OR IGNORE`). El mismo movimiento conserva su id aunque venga en otro PDF, en otra página o con otro `--privacy`.
+3. Usa `statement_id` para saber si un estado ya se importó, e `installment_plans[].id` para seguir una compra a meses de un mes a otro: cambian la parcialidad y el saldo, no el id.
+4. Dos movimientos idénticos el mismo día tienen ids distintos: no los fusiones.
+5. Si cambias o pierdes la llave, los ids nuevos no coincidirán con los guardados. Trátala como un secreto y respáldala.
 
 ## Ejemplo de uso en un agente
 

@@ -121,7 +121,7 @@ class Redactor:
         return n or None
 
     # -- construcción ------------------------------------------------------
-    def _transaction(self, i: int, tx: RawTransaction) -> Transaction:
+    def _transaction(self, i: int, tx: RawTransaction, tx_id: str) -> Transaction:
         description = self.scrub(tx.description) or "[SIN DESCRIPCION]"
         if self.profile == "strict" and tx.type == "other":
             description = "[OTRO]"
@@ -140,6 +140,7 @@ class Redactor:
             self.removed["concept"] += 1
         amount = (tx.credit or Decimal(0)) - (tx.debit or Decimal(0))
         return Transaction(
+            id=tx_id,
             index=i,
             date=tx.date,
             posting_date=tx.posting_date,
@@ -165,10 +166,58 @@ class Redactor:
             page=tx.page,
         )
 
-    def _plan(self, plan: dict) -> InstallmentPlan:
+    def _plan(self, plan: dict, plan_id: str) -> InstallmentPlan:
         data = {k: (q(v) if k in _PLAN_MONEY else v) for k, v in plan.items()}
         data["description"] = self.scrub(plan.get("description")) or "[SIN DESCRIPCION]"
-        return InstallmentPlan(**data)
+        return InstallmentPlan(id=plan_id, **data)
+
+    # -- identificadores estables (ver docs/03 §7) -------------------------
+    def _ids(self, sha256: str, validation: Validation) -> tuple[str, list[str], list[str]]:
+        """Ids HMAC calculados SOLO con datos crudos y estables: nunca con texto redactado, ``index``,
+        ``page``, ``type`` ni ``merchant``, para que no cambien con el perfil ni entre versiones del parser.
+        """
+        raw = self.raw
+        # identificador real de la cuenta: solo entra al HMAC, nunca a la salida
+        account = (raw.bank, raw.product, raw.header.account_number or "")
+        if not raw.header.account_number:
+            validation.warnings.append(
+                "No se encontró el número de cuenta: los ids no distinguen entre cuentas distintas."
+            )
+        if raw.period_start and raw.period_end:
+            statement_id = self.pseudo.ident("ST", *account, raw.period_start.isoformat(), raw.period_end.isoformat())
+        else:
+            # sin periodo no hay forma estable de identificar el estado: se usa el PDF exacto
+            statement_id = self.pseudo.ident("ST", *account, f"sha256:{sha256}")
+
+        def with_ordinal(keys: list[tuple[str, ...]]) -> list[tuple[str, ...]]:
+            # duplicados legítimos (dos compras idénticas el mismo día): ordinal de ocurrencia
+            # entre movimientos con la misma tupla dentro de este estado, no un índice global
+            seen: Counter[tuple[str, ...]] = Counter()
+            out = []
+            for k in keys:
+                out.append((*k, str(seen[k])))
+                seen[k] += 1
+            return out
+
+        tx_keys = [
+            (
+                tx.date.isoformat(),
+                format(q((tx.credit or Decimal(0)) - (tx.debit or Decimal(0))), "f"),
+                norm(tx.first_line),
+            )
+            for tx in raw.transactions
+        ]
+        plan_keys = [
+            (
+                norm(str(p.get("description") or "")),
+                p["start_date"].isoformat() if p.get("start_date") else "",
+                format(q(p["original_amount"]), "f") if p.get("original_amount") is not None else "",
+            )
+            for p in raw.installment_plans
+        ]
+        tx_ids = [self.pseudo.ident("TX", *account, *k) for k in with_ordinal(tx_keys)]
+        plan_ids = [self.pseudo.ident("PLAN", *account, *k) for k in with_ordinal(plan_keys)]
+        return statement_id, tx_ids, plan_ids
 
     def build(self, file_name: str, sha256: str, validation: Validation) -> Statement:
         raw = self.raw
@@ -182,10 +231,12 @@ class Redactor:
         if acct:
             self.pseudonymized["account"] += 1
             self.masked["account_number"] += 1
-        transactions = [self._transaction(i, tx) for i, tx in enumerate(raw.transactions)]
+        statement_id, tx_ids, plan_ids = self._ids(sha256, validation)
+        transactions = [self._transaction(i, tx, tx_ids[i]) for i, tx in enumerate(raw.transactions)]
         s = raw.summary
         return Statement(
             schema_version=SCHEMA_VERSION,
+            statement_id=statement_id,
             source=Source(
                 file_name=None if strict else file_name,
                 file_sha256=None if strict else sha256,
@@ -207,7 +258,7 @@ class Redactor:
             rates=Rates(**{k: v for k, v in raw.rates.items() if v is not None}),
             credit=Credit(**{k: (q(v) if k in _CREDIT_MONEY else v) for k, v in raw.credit.items() if v is not None})
             if raw.product == "credit" else None,
-            installment_plans=[self._plan(p) for p in raw.installment_plans],
+            installment_plans=[self._plan(p, plan_ids[i]) for i, p in enumerate(raw.installment_plans)],
             transactions=transactions,
             validation=validation,
             privacy=Privacy(

@@ -1,6 +1,6 @@
 [project]
 name = "mx-bank-statement-reader"
-version = "0.1.0"
+version = "0.2.0"
 description = "CLI orientada a IA: estados de cuenta bancarios mexicanos (PDF) a JSON sin datos personales"
 readme = "README.md"
 license = "Apache-2.0"

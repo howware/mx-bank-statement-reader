@@ -65,6 +65,16 @@ Los números largos que **no** validan se tratan según perfil: en `strict` se e
 - Con `--pseudonym-key-env` (`pseudonym_scope: "key"`): tokens estables entre meses. La llave nunca se escribe en la salida ni en logs.
 - La longitud del hash crece automáticamente si hay colisiones dentro del documento.
 
+### Identificadores estables (`statement_id`, `transactions[].id`, `installment_plans[].id`)
+
+`id = PREFIJO + "_" + hex(HMAC-SHA256(llave, "mxbank-id/v1" | PREFIJO | banco | producto | número de cuenta | …))[:16]` (detalle de las entradas en [03 §7](03-esquema-salida.md#7-identificadores-estables-schema-11)).
+
+**Por qué HMAC y no un hash simple.** Las entradas son datos que un atacante puede conocer o adivinar: el número de cuenta tiene 10–11 dígitos, la fecha está acotada al periodo y el monto a unos cuantos miles de valores. Con un hash sin llave (`sha256(cuenta | fecha | monto | …)`) bastaría probar combinaciones hasta reproducir el id para **confirmar o recuperar el número de cuenta**, o para saber si alguien hizo un pago concreto. Con HMAC, sin la llave cada intento es indistinguible del azar, así que el id no deja derivar nada.
+
+- La llave es la misma de los seudónimos (`--pseudonym-key-env`). Guárdala como cualquier secreto: quien la tenga puede verificar suposiciones sobre los ids.
+- El número de cuenta entra **solo al HMAC**; nunca aparece en la salida.
+- El escáner residual exime estos campos **solo** si se llaman `id` o `statement_id` **y** su valor coincide exactamente con `^(TX|ST|PLAN)_[0-9a-f]{16,64}$`; cualquier otro contenido en esos campos, o ese formato en otro campo, se escanea normalmente.
+
 ## 6. Perfiles
 
 | Elemento | `minimal` | `standard` (default) | `strict` |

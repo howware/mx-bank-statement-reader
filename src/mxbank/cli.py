@@ -109,6 +109,13 @@ def extract(
         raise typer.Exit(exc.exit_code) from None
     # una sola llave por ejecución: los seudónimos coinciden entre los archivos del lote
     pseudo = Pseudonymizer(key_env.encode() if key_env else None)
+    if not key_env and (ndjson or len(files) > 1 or any(f.is_dir() for f in files)):
+        print(
+            "aviso: sin --pseudonym-key-env, statement_id, transactions[].id, installment_plans[].id y los "
+            "seudónimos solo son válidos dentro de esta ejecución; para importar o comparar entre ejecuciones "
+            "usa siempre la misma llave.",
+            file=sys.stderr,
+        )
     _run(files, lambda f: extract_file(f, opts, pseudo), pretty or sys.stdout.isatty(), ndjson, out)
 
 

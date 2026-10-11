@@ -76,7 +76,14 @@ class Rates(_Model):
     gat_real_percent: Decimal | None = None
 
 
+ID_DESCRIPTION = (
+    "HMAC-SHA256 con la llave de seudónimos: estable entre ejecuciones solo con --pseudonym-key-env "
+    "(pseudonym_scope = key); sin llave, válido solo dentro de una ejecución"
+)
+
+
 class Transaction(_Model):
+    id: str = Field(description="Identificador estable del movimiento (TX_<hex>). " + ID_DESCRIPTION)
     index: int
     date: date
     posting_date: date | None = None
@@ -127,6 +134,7 @@ class Credit(_Model):
 
 
 class InstallmentPlan(_Model):
+    id: str = Field(description="Identificador estable de la compra a meses, igual en todos los estados donde aparece (PLAN_<hex>). " + ID_DESCRIPTION)
     description: str
     start_date: date | None = Field(default=None, description="Fecha de la operación original")
     original_amount: Money | None = None
@@ -160,6 +168,7 @@ class Privacy(_Model):
 class Statement(_Model):
     schema_version: str
     ok: Literal[True] = True
+    statement_id: str = Field(description="Identificador estable del estado de cuenta: cuenta + producto + periodo (ST_<hex>). " + ID_DESCRIPTION)
     source: Source
     document: Document
     account: Account

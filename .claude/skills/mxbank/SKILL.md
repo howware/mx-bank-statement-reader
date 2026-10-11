@@ -28,7 +28,7 @@ mxbank schema                           # JSON Schema completo
 Si `mxbank` no está en el PATH: `uv tool install git+https://github.com/proteo5/mx-bank-statement-reader` (pide permiso antes de instalar), o desde un clon del repo: `uv run --project <ruta-del-repo> mxbank …`.
 
 - **PDF con contraseña** (código 11): pide al usuario que la ponga en una variable de entorno y usa `--password-env NOMBRE`. Nunca la pases como argumento ni la escribas en la conversación.
-- **Varios meses**: usa la misma llave de seudónimos en todas las ejecuciones (`--pseudonym-key-env NOMBRE`), para que la misma cuenta o contraparte tenga el mismo alias.
+- **Varios meses o importación**: usa **siempre la misma llave** (`--pseudonym-key-env NOMBRE`) para que la misma cuenta, contraparte, movimiento y plan a meses tengan el mismo alias e id en todas las ejecuciones. Sin llave, la CLI avisa en stderr y los ids no sirven fuera de esa ejecución.
 - `--include-concepts` agrega los conceptos de transferencias (redactados); úsalo solo si el usuario lo pide.
 
 | Código | Significado / qué hacer |
@@ -48,6 +48,11 @@ Si `mxbank` no está en el PATH: `uv tool install git+https://github.com/proteo5
 - `installment_plans[]`: compras a meses con `pending_balance` y `installment_number`/`installments_total`.
 - `original_currency` / `original_amount` / `exchange_rate`: compras en otra moneda.
 - `merchant`: nombre canónico cuando el comercio es conocido; si no, usa `description`.
+- `statement_id`, `transactions[].id`, `installment_plans[].id` (schema 1.1): identificadores HMAC estables.
+  - **Para no duplicar** al combinar estados que se enciman o reimportados, agrupa o deduplica por `transactions[].id`, nunca por fecha + monto: dos compras idénticas el mismo día tienen ids distintos y ambas son reales.
+  - Sigue una compra a meses entre estados con `installment_plans[].id`.
+  - Los ids solo son comparables si `privacy.pseudonym_scope == "key"` y se usó la misma llave; con `"run"` no los guardes ni los compares entre ejecuciones.
+  - No intentes deducir nada de un id: no contiene datos.
 
 ## Cómo calcular bien (lecciones de estados reales)
 

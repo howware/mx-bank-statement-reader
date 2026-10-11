@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -206,6 +207,7 @@ def test_tdc_credit_block(tdc_pdf):
 
 def test_tdc_installment_plans(tdc_pdf):
     plans = extract_file(tdc_pdf, Options())["installment_plans"]
+    assert re.fullmatch(r"PLAN_[0-9a-f]{16}", plans[0].pop("id"))
     assert plans == [{
         "description": "E TICKET", "start_date": "2026-07-10", "original_amount": "3000.00",
         "pending_balance": "2500.00", "required_payment": "500.00", "installment_number": 2,

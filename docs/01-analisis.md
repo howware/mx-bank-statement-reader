@@ -159,4 +159,4 @@ Conclusión de diseño: **procesamiento 100 % local, sin telemetría, sin red**,
 | **F2** | Tarjetas de crédito de los mismos bancos, lote/directorio, consolidado multi‑mes, categorización básica de movimientos. |
 | **F3** | Más bancos, OCR, servidor MCP que expone las mismas herramientas, empaquetado como binario único. |
 
-> **Estado en v0.1.0**: F0 y F1 completas salvo el modo `generic` (un banco no soportado se rechaza con código 20/21 en lugar de extraerse en modo de respaldo). De F2 ya están las tarjetas de crédito BBVA; consolidado y categorización siguen pendientes. Ver [02 §11](02-especificacion-tecnica.md#11-estado-de-implementación-v010).
+> **Estado en v0.1.0**: F0 y F1 completas salvo el modo `generic` (un banco no soportado se rechaza con código 20/21 en lugar de extraerse en modo de respaldo). De F2 ya están las tarjetas de crédito BBVA; consolidado y categorización siguen pendientes. Ver [02 §11](02-especificacion-tecnica.md#11-estado-de-implementación-v020).

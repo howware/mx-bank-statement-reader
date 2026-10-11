@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml"><img src="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/versión-0.1.0-blue" alt="Versión 0.1.0">
+  <img src="https://img.shields.io/badge/versión-0.2.0-blue" alt="Versión 0.2.0">
   <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python 3.12+">
   <img src="https://img.shields.io/badge/licencia-Apache%202.0-green" alt="Licencia Apache 2.0">
 </p>
@@ -121,8 +121,9 @@ Extracto real generado a partir del PDF **sintético** de las pruebas, con datos
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "ok": true,
+  "statement_id": "ST_5c0e9a41d27b8f36",
   "document": { "bank": "bbva", "product": "credit", "product_name": "TARJETA AZUL BBVA (CREDITO)", "currency": "MXN" },
   "account": { "account_ref": "ACC_92d5", "account_last4": "3210", "holder_type": "individual" },
   "period": { "start": "2026-08-15", "end": "2026-09-14", "days": 31 },
@@ -132,7 +133,7 @@ Extracto real generado a partir del PDF **sintético** de las pruebas, con datos
     "minimum_payment": "900.00", "no_interest_payment": "1965.00", "cat_percent": "75.3"
   },
   "transactions": [
-    { "date": "2026-08-18", "description": "AMAZON", "type": "card_purchase", "amount": "-1200.00",
+    { "id": "TX_8d41f0b27c9e3a65", "date": "2026-08-18", "description": "AMAZON", "type": "card_purchase", "amount": "-1200.00",
       "merchant": "AMAZON", "card_type": "digital" },
     { "date": "2026-08-20", "description": "NETFLIX", "type": "card_purchase", "amount": "-299.00",
       "original_currency": "USD", "original_amount": "15.00", "exchange_rate": "19.93" },
@@ -148,6 +149,7 @@ Extracto real generado a partir del PDF **sintético** de las pruebas, con datos
 
 - Montos como **texto decimal** (`"1200.00"`), para no perder precisión. `amount` negativo = salida de dinero.
 - Fechas ISO-8601. `null` significa que el dato no viene en el documento; nunca se inventa.
+- `statement_id`, `transactions[].id` e `installment_plans[].id` son **identificadores estables** (HMAC con tu llave): con la misma `--pseudonym-key-env` puedes reimportar estados, incluso los que se enciman, sin duplicar movimientos. Ver [docs/03 §7](docs/03-esquema-salida.md#7-identificadores-estables-schema-11).
 - El esquema completo se obtiene con `mxbank schema`; la semántica de cada campo está en [docs/03-esquema-salida.md](docs/03-esquema-salida.md).
 
 ## Privacidad

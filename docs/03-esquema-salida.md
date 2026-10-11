@@ -1,8 +1,10 @@
-# 03 · Esquema de salida JSON (v1, borrador)
+# 03 · Esquema de salida JSON (schema 1.1)
 
 El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/statement.py`) y se obtiene con `mxbank schema`; **ese es la referencia autoritativa**. Este documento describe la forma y la semántica.
 
 > Schema 1.0 (v0.1.0), además de lo que muestra el ejemplo: `transactions[].balance_operation`, `value_date`, `counterparty_account_ref`, `concept` (solo con `--include-concepts`); `summary.minimum_average_balance`, `fees_vat`; bloque `rates`; `validation.running_balance_checked`, `bank_totals_match`; `privacy.include_concepts`. También `credit` e `installment_plans` (con `start_date` en lugar de `date`) y en movimientos `original_currency`, `original_amount`, `exchange_rate`, `installment_number`, `installments_total`, `card_type`. Pendiente: `fees[]`.
+
+> **Schema 1.1** (cambio aditivo): `statement_id` en la raíz, `transactions[].id` e `installment_plans[].id`. Ver §7.
 
 ## 1. Principios
 
@@ -16,8 +18,9 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "ok": true,
+  "statement_id": "ST_5c0e9a41d27b8f36",
   "source": {
     "file_name": "estado_2026_09.pdf",
     "file_sha256": "9f2c…",
@@ -58,6 +61,7 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
   },
   "transactions": [
     {
+      "id": "TX_8d41f0b27c9e3a65",
       "index": 0,
       "date": "2026-08-15",
       "posting_date": "2026-08-15",
@@ -73,6 +77,7 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
       "page": 2
     },
     {
+      "id": "TX_f20c6b9e41a7d385",
       "index": 1,
       "date": "2026-08-16",
       "posting_date": "2026-08-16",
@@ -136,6 +141,7 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
 },
 "installment_plans": [
   {
+    "id": "PLAN_3e7a90c5b1f4d268",
     "description": "LIVERPOOL MSI",
     "original_amount": "12000.00",
     "monthly_amount": "1000.00",
@@ -152,6 +158,7 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
 | Campo | Significado | Nota de privacidad |
 |---|---|---|
 | `account_ref` | Token estable del número de cuenta (HMAC) | Permite a la IA agrupar meses de la misma cuenta sin conocer el número. |
+| `statement_id`, `transactions[].id`, `installment_plans[].id` | Identificadores estables (HMAC), §7 | No contienen ni dejan derivar la cuenta, montos ni descripciones sin la llave. |
 | `account_last4` | Últimos 4 dígitos | Omitido en perfil `strict`. |
 | `counterparty_ref` | Token de la contraparte (`PERSONA_xxxx` / `EMPRESA_xxxx`) | Misma contraparte ⇒ mismo token dentro del ámbito (`run` o `key`). |
 | `merchant` | Comercio normalizado | Se conserva: es útil y no identifica al titular. |
@@ -167,3 +174,23 @@ El JSON Schema formal se genera desde los modelos Pydantic (`src/mxbank/models/s
 
 - `schema_version` sigue SemVer: cambios aditivos ⇒ menor; cambios que rompen ⇒ mayor.
 - `mxbank schema --version N` imprime cualquier versión soportada.
+
+## 7. Identificadores estables (schema 1.1)
+
+Sirven para que un importador (p. ej. una base de datos personal de solo agregado) pueda **reimportar** un estado o importar **estados que se enciman** sin duplicar nada: basta con insertar solo los `id` que aún no tiene.
+
+| Campo | Formato | Entradas del HMAC | Igual cuando… |
+|---|---|---|---|
+| `statement_id` (raíz) | `ST_<16 hex>` | banco, producto, número de cuenta, inicio y fin del periodo | es el mismo estado de cuenta (mismo periodo de la misma cuenta), aunque sea otro PDF o se descargue de nuevo |
+| `transactions[].id` | `TX_<16 hex>` | banco, producto, número de cuenta, `date`, `amount`, descripción **cruda** del banco normalizada (`text.norm`), ordinal de ocurrencia | es el mismo movimiento, aunque aparezca en dos estados que se enciman o en otra posición/página |
+| `installment_plans[].id` | `PLAN_<16 hex>` | banco, producto, número de cuenta, descripción cruda normalizada, `start_date`, `original_amount`, ordinal de ocurrencia | es la misma compra a meses, en todos los estados donde aparezca (cambian la parcialidad y el saldo, el id no) |
+
+Reglas:
+
+- **Estables solo con llave**: con `--pseudonym-key-env` (`privacy.pseudonym_scope: "key"`) y siempre la misma llave, los ids son iguales entre ejecuciones, PDFs y perfiles. **Sin llave** (`"run"`) la llave es aleatoria y los ids solo valen dentro de esa ejecución; la CLI lo advierte en stderr al procesar varios archivos o usar `--ndjson`.
+- **No dependen** de `--privacy`, `--include-concepts`, `index`, `page`, el orden de extracción, `type`, `merchant` ni del texto redactado: se calculan con los datos crudos antes de redactar.
+- **Duplicados legítimos** (dos compras idénticas el mismo día): el ordinal de ocurrencia (0, 1, …) entre movimientos con la misma fecha, monto y descripción **dentro del mismo estado** los distingue. Si un estado que se encima trae solo una de dos compras idénticas, se le asigna el ordinal 0.
+- **Sin periodo** (el parser no lo encontró), `statement_id` se calcula con el hash del PDF: solo es estable para ese archivo exacto.
+- **Sin número de cuenta**, los ids no distinguen entre cuentas distintas; la salida lo avisa en `validation.warnings`.
+- Formato: 16 hex (64 bits). Si dos ids chocaran dentro de una ejecución con datos distintos, el hash se alarga de 2 en 2.
+- El HMAC usa un separador de dominio versionado (`mxbank-id/v1`): si algún día cambian las entradas, cambiará el prefijo de dominio y se documentará como cambio de esquema.
