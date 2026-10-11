@@ -177,7 +177,29 @@ Modelo de amenaza, perfiles y riesgos residuales: [docs/04-privacidad-y-redaccio
 
 `mxbank` está pensado para que un agente lo invoque como herramienta: el agente ejecuta `mxbank extract`, lee el JSON y razona sobre los movimientos sin ver nunca el PDF. Las reglas, los códigos de salida y un ejemplo están en [docs/AGENT.md](docs/AGENT.md), listos para copiarse a las instrucciones de un agente.
 
-**Claude Code**: el repositorio incluye el skill [`.claude/skills/mxbank`](.claude/skills/mxbank/SKILL.md), que Claude carga solo cuando le pides analizar un estado de cuenta. Trae las reglas de privacidad y las recetas para calcular bien (qué no es gasto, cómo detectar cargos recurrentes, cómo verificar las sumas). Para tenerlo en todas tus sesiones, cópialo a `~/.claude/skills/mxbank/`.
+### Skill para Claude Code
+
+El repositorio incluye el skill [`mxbank`](.claude/skills/mxbank/SKILL.md). Claude Code lo carga solo cuando le pides revisar, resumir o graficar un estado de cuenta, y con él la sesión sabe:
+
+- usar `mxbank extract` en lugar de abrir el PDF;
+- que pagos a la tarjeta y traslados a meses no son gasto;
+- cómo detectar cargos recurrentes;
+- cómo verificar las sumas contra el banco antes de responder.
+
+- **Dentro de un clon del repositorio** ya está disponible; no hay que hacer nada.
+- **Para tenerlo en todas tus sesiones**, instálalo en tu usuario:
+
+  ```bash
+  # macOS / Linux
+  mkdir -p ~/.claude/skills/mxbank && curl -fsSL https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -o ~/.claude/skills/mxbank/SKILL.md
+  ```
+
+  ```powershell
+  # Windows (PowerShell)
+  New-Item -ItemType Directory -Force "$HOME\.claude\skills\mxbank" | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -OutFile "$HOME\.claude\skills\mxbank\SKILL.md"
+  ```
+
+  Reinicia Claude Code y pide, por ejemplo: *"analiza mis gastos del estado de cuenta `~/estados/tarjeta_sep.pdf`"*. Para actualizar el skill, vuelve a ejecutar el mismo comando.
 
 **Si desarrollas el proyecto con una IA**, las reglas están en [AGENTS.md](AGENTS.md).
 
