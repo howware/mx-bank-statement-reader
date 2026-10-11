@@ -177,6 +177,10 @@ Modelo de amenaza, perfiles y riesgos residuales: [docs/04-privacidad-y-redaccio
 
 `mxbank` está pensado para que un agente lo invoque como herramienta: el agente ejecuta `mxbank extract`, lee el JSON y razona sobre los movimientos sin ver nunca el PDF. Las reglas, los códigos de salida y un ejemplo están en [docs/AGENT.md](docs/AGENT.md), listos para copiarse a las instrucciones de un agente.
 
+**Claude Code**: el repositorio incluye el skill [`.claude/skills/mxbank`](.claude/skills/mxbank/SKILL.md), que Claude carga solo cuando le pides analizar un estado de cuenta. Trae las reglas de privacidad y las recetas para calcular bien (qué no es gasto, cómo detectar cargos recurrentes, cómo verificar las sumas). Para tenerlo en todas tus sesiones, cópialo a `~/.claude/skills/mxbank/`.
+
+**Si desarrollas el proyecto con una IA**, las reglas están en [AGENTS.md](AGENTS.md).
+
 ## Desarrollo
 
 ```bash

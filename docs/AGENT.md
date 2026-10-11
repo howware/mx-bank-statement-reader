@@ -2,6 +2,8 @@
 
 Instrucciones para un agente (Claude Code, un cliente MCP o cualquier script con un LLM) que use `mxbank` como herramienta. Copia esta sección a las instrucciones del agente si hace falta.
 
+En Claude Code no hace falta copiar nada: el skill [`.claude/skills/mxbank`](../.claude/skills/mxbank/SKILL.md) contiene estas reglas y además las recetas de análisis (qué movimientos no son gasto, cargos recurrentes, sumas de verificación).
+
 ## Reglas
 
 1. **Nunca leas ni subas el PDF original.** Invoca `mxbank extract` y trabaja solo con el JSON que devuelve.

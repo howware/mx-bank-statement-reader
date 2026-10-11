@@ -66,7 +66,8 @@ Descripciones:
 | `BMOVIL.PAGO TDC` | `card_payment` |
 | `USO DE PUNTOS <comercio>` | `rewards_redemption` |
 | `ABONO FINANC. COMPRAS NNMSI`, `ALTA PARA MESES S/INTERESES`, `ABONO POR TRASP. A PROMOC.` | `installment_conversion` |
-| `CONTRATACION BENEFICIOS NMSI` (su monto = `Monto de comisiones` del resumen) | `fee` |
+| `CONTRATACION BENEFICIOS NMSI` (comisión del banco: su monto = `Monto de comisiones` del resumen) | `fee` |
+| `COMISION EST SERV PUBL`, `COM …` (comisión que cobra un establecimiento, p. ej. por pagar un servicio) | `fee` (el banco la cuenta en **cargos regulares**, no en comisiones) |
 | `COMISION …` | `fee` |
 
 Las descripciones de comercio se emiten tal cual (criterio del proyecto: los movimientos son útiles para finanzas personales), pasando por el diccionario del documento: si contienen palabras del nombre o domicilio del titular (p. ej. la colonia en el nombre de una sucursal) se reemplazan por `[DATO]`.
@@ -76,7 +77,8 @@ Las descripciones de comercio se emiten tal cual (criterio del proyecto: los mov
 1. **Resumen**: adeudo anterior + cargos regulares + cargos a meses + intereses + comisiones + IVA − pagos y abonos = pago para no generar intereses = saldo de cargos regulares.
 2. **Movimientos**: adeudo anterior + Σ cargos − Σ abonos + intereses + IVA = saldo de cargos regulares, **excluyendo los cargos `ALTA PARA MESES`** (son informativos: van al saldo a meses; su contraparte en regulares es `ABONO FINANC.`). Las comisiones sí aparecen como movimiento; intereses e IVA solo en el resumen.
 3. **Totales**: `TOTAL ABONOS` = Σ abonos = pagos y abonos del resumen; `TOTAL CARGOS` = Σ cargos − comisiones (**BBVA no incluye las comisiones en ese total**).
-4. Saldo cargos regulares + saldo a meses = saldo deudor total; límite − saldo deudor total = crédito disponible; Σ saldo pendiente de los planes = saldo a meses.
+4. Σ compras + Σ movimientos `fee` − comisiones del banco = cargos regulares del resumen; Σ parcialidades = cargos a meses.
+5. Saldo cargos regulares + saldo a meses = saldo deudor total; límite − saldo deudor total = crédito disponible; Σ saldo pendiente de los planes = saldo a meses.
 
 ## 7. Pendientes
 

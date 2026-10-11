@@ -12,3 +12,6 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Configuración local de Claude Code (el skill en .claude/skills sí se versiona)
+.claude/settings.local.json
