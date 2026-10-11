@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mxbank · Estados de cuenta para IA sin datos personales</title>
+<meta name="description" content="CLI de código abierto que lee estados de cuenta de bancos mexicanos en PDF y entrega un JSON estructurado sin datos personales, listo para una IA. 100 % local.">
+<meta property="og:title" content="mxbank · Estados de cuenta para IA sin datos personales">
+<meta property="og:description" content="Lee estados de cuenta de bancos mexicanos en PDF y entrega un JSON que no te identifica. 100 % local, cifras conciliadas, hecho para agentes de IA.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Cpath d='M8 12h16M8 16h10M8 20h13' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #fbfbfa;
+    --surface: #ffffff;
+    --surface-2: #f3f2ef;
+    --border: #e4e3de;
+    --text: #0e0e0d;
+    --text-2: #4d4c48;
+    --muted: #7a7974;
+    --accent: #2a78d6;
+    --accent-ink: #ffffff;
+    --accent-soft: #e8f1fc;
+    --good: #12805c;
+    --bad: #c2412d;
+    --code-bg: #0f1115;
+    --code-text: #e6e6e3;
+    --code-muted: #8b8f98;
+    --code-key: #7cb7ff;
+    --code-str: #9fd88f;
+    --code-num: #f2c46d;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0d0d0c;
+      --surface: #161615;
+      --surface-2: #1d1d1b;
+      --border: #2c2c29;
+      --text: #f1f0ec;
+      --text-2: #c4c3ba;
+      --muted: #8f8e86;
+      --accent: #4a92ea;
+      --accent-ink: #0d0d0c;
+      --accent-soft: #15243a;
+      --good: #3ec58e;
+      --bad: #f07a63;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d0d0c; --surface: #161615; --surface-2: #1d1d1b; --border: #2c2c29;
+    --text: #f1f0ec; --text-2: #c4c3ba; --muted: #8f8e86; --accent: #4a92ea; --accent-ink: #0d0d0c;
+    --accent-soft: #15243a; --good: #3ec58e; --bad: #f07a63; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  /* los hijos de un grid no deben crecer por un <pre> ancho: el <pre> hace scroll propio */
+  .hero-grid > *, .two > *, .compare > *, .grid3 > *, .steps > * { min-width: 0; }
+
+  /* nav */
+  header.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  .nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); font-size: 18px; }
+  .brand:hover { text-decoration: none; }
+  .logo { width: 26px; height: 26px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; }
+  .nav nav { display: flex; gap: 20px; margin-left: auto; font-size: 15px; }
+  .nav nav a { color: var(--text-2); }
+  .nav nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 760px) { .nav nav a:not(.gh) { display: none; } }
+
+  /* hero */
+  .hero { padding: 72px 0 56px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } .hero { padding: 48px 0 40px; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 999px; margin-bottom: 18px; }
+  h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 18px; }
+  h1 .hl { color: var(--accent); }
+  .lead { font-size: 19px; color: var(--text-2); margin: 0 0 28px; max-width: 34em; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 15px; border: 1px solid var(--border); color: var(--text); background: var(--surface); }
+  .btn:hover { text-decoration: none; border-color: var(--muted); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.primary:hover { filter: brightness(1.06); }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 26px; color: var(--muted); font-size: 14px; }
+  .facts span::before { content: "✓ "; color: var(--good); font-weight: 700; }
+
+  /* terminal */
+  .term { background: var(--code-bg); color: var(--code-text); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border: 1px solid #23262d; }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid #23262d; }
+  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a3e47; display: block; }
+  .term-bar b { margin-left: 8px; font-weight: 500; font-size: 12px; color: var(--code-muted); }
+  .term pre { margin: 0; padding: 16px 18px 18px; font-size: 13px; line-height: 1.55; overflow-x: auto; }
+  .p { color: var(--code-muted); } .k { color: var(--code-key); } .s { color: var(--code-str); } .n { color: var(--code-num); }
+
+  /* sections */
+  section { padding: 64px 0; }
+  section.alt { background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  h2 { font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -0.015em; line-height: 1.15; margin: 0 0 12px; }
+  .sub { color: var(--text-2); font-size: 17px; margin: 0 0 36px; max-width: 46em; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .compare { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .panel h3 { margin: 0 0 14px; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 14px; padding: 5px 11px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); }
+  .chip.out { text-decoration: line-through; text-decoration-color: var(--bad); color: var(--text-2); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  .steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; counter-reset: s; }
+  @media (max-width: 980px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+  .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px; position: relative; }
+  .step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 12px; }
+  .step h3 { font-size: 15px; margin: 0 0 6px; }
+  .step p { font-size: 14px; color: var(--text-2); margin: 0; }
+  .step.fail { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .grid3 { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .card .ic { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin-bottom: 14px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; color: var(--text-2); font-size: 15px; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+  .tag.ok { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .tag.rm { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+  .tag.ps { color: var(--accent); background: var(--accent-soft); }
+
+  .callout { margin-top: 20px; display: flex; gap: 14px; align-items: flex-start; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: var(--radius); padding: 18px 20px; }
+  .callout p { margin: 0; color: var(--text); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+  ul.clean { margin: 0; padding-left: 20px; color: var(--text-2); }
+  ul.clean li { margin: 8px 0; }
+
+  .cmd { position: relative; margin: 0 0 14px; }
+  .cmd pre { margin: 0; background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 14px 52px 14px 16px; font-size: 14px; overflow-x: auto; border: 1px solid #23262d; }
+  .copy { position: absolute; top: 8px; right: 8px; background: #23262d; color: #cfd2d8; border: 0; border-radius: 7px; padding: 6px 9px; font-size: 12px; cursor: pointer; }
+  .copy:hover { background: #2f333c; }
+  .copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .label { font-size: 13px; font-weight: 600; color: var(--muted); margin: 18px 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+  footer .cols { display: flex; flex-wrap: wrap; gap: 28px 56px; justify-content: space-between; }
+  footer h4 { color: var(--text); font-size: 14px; margin: 0 0 10px; }
+  footer ul { list-style: none; padding: 0; margin: 0; }
+  footer li { margin: 6px 0; }
+  footer .legal { margin-top: 28px; max-width: 60em; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><span class="logo" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 5h10M3 8h6M3 11h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span>mxbank</a>
+    <nav aria-label="Secciones">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#bancos">Bancos</a>
+      <a href="#privacidad">Privacidad</a>
+      <a href="#instalacion">Instalación</a>
+      <a class="gh" href="https://github.com/proteo5/mx-bank-statement-reader">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Código abierto · v0.1.0</span>
+        <h1>Tus estados de cuenta, <span class="hl">listos para la IA</span>. Sin tus datos personales.</h1>
+        <p class="lead">mxbank lee estados de cuenta de bancos mexicanos en PDF <b>en tu computadora</b>, extrae saldos y movimientos, elimina todo lo que te identifica y entrega un JSON que ya puedes compartir con cualquier asistente.</p>
+        <div class="cta">
+          <a class="btn primary" href="#instalacion">Instalar</a>
+          <a class="btn" href="https://github.com/proteo5/mx-bank-statement-reader">Ver en GitHub</a>
+        </div>
+        <div class="facts"><span>100 % local</span><span>Cifras conciliadas</span><span>Falla cerrado ante la duda</span><span>Apache 2.0</span></div>
+      </div>
+      <div class="term" role="img" aria-label="Ejemplo de uso en terminal con salida JSON">
+        <div class="term-bar"><i></i><i></i><i></i><b>terminal · datos ficticios</b></div>
+<pre><span class="p">$</span> mxbank extract tarjeta_sep.pdf
+{
+  <span class="k">"document"</span>: { <span class="k">"bank"</span>: <span class="s">"bbva"</span>, <span class="k">"product"</span>: <span class="s">"credit"</span> },
+  <span class="k">"account"</span>:  { <span class="k">"account_ref"</span>: <span class="s">"ACC_92d5"</span> },
+  <span class="k">"credit"</span>: {
+    <span class="k">"payment_due_date"</span>: <span class="s">"2026-10-08"</span>,
+    <span class="k">"no_interest_payment"</span>: <span class="s">"1965.00"</span>
+  },
+  <span class="k">"transactions"</span>: [
+    { <span class="k">"date"</span>: <span class="s">"2026-08-18"</span>, <span class="k">"description"</span>: <span class="s">"AMAZON"</span>,
+      <span class="k">"type"</span>: <span class="s">"card_purchase"</span>, <span class="k">"amount"</span>: <span class="s">"-1200.00"</span> },
+    { <span class="k">"date"</span>: <span class="s">"2026-08-20"</span>, <span class="k">"description"</span>: <span class="s">"NETFLIX"</span>,
+      <span class="k">"original_currency"</span>: <span class="s">"USD"</span>, <span class="k">"amount"</span>: <span class="s">"-299.00"</span> }
+  ],
+  <span class="k">"validation"</span>: { <span class="k">"reconciled"</span>: <span class="n">true</span>, <span class="k">"difference"</span>: <span class="s">"0.00"</span> },
+  <span class="k">"privacy"</span>: { <span class="k">"residual_scan"</span>: <span class="s">"passed"</span> }
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2>Subir el PDF expone mucho más que tus gastos</h2>
+      <p class="sub">Un estado de cuenta trae tu identidad completa y datos de otras personas. Para entender tus finanzas, una IA solo necesita los movimientos.</p>
+      <div class="compare">
+        <div class="panel">
+          <h3><span class="dot" style="background:var(--bad)"></span>Lo que trae el PDF y mxbank elimina</h3>
+          <div class="chips">
+            <span class="chip out">Nombre</span><span class="chip out">Domicilio</span><span class="chip out">RFC y CURP</span>
+            <span class="chip out">Número de tarjeta</span><span class="chip out">CLABE</span><span class="chip out">Número de cliente</span>
+            <span class="chip out">Sucursal y ejecutivo</span><span class="chip out">Nombres de a quién transfieres</span>
+            <span class="chip out">Cuentas de terceros</span><span class="chip out">Claves de rastreo</span><span class="chip out">Folio fiscal y sellos</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3><span class="dot" style="background:var(--good)"></span>Lo que recibe la IA</h3>
+          <div class="chips">
+            <span class="chip">Fecha</span><span class="chip">Comercio</span><span class="chip">Monto</span><span class="chip">Tipo de movimiento</span>
+            <span class="chip">Saldos del periodo</span><span class="chip">Pago mínimo y fecha límite</span><span class="chip">Meses sin intereses</span>
+            <span class="chip">Compras en dólares</span><span class="chip">Seudónimos estables</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="wrap">
+      <h2>Cómo funciona</h2>
+      <p class="sub">Todo ocurre en memoria, en tu equipo. Si cualquier paso tiene dudas, no se emite nada.</p>
+      <div class="steps">
+        <div class="step"><h3>Lee el PDF</h3><p>Extrae el texto con sus coordenadas. Sin red y sin archivos temporales.</p></div>
+        <div class="step"><h3>Detecta el banco</h3><p>Reconoce el formato por sus huellas; si no lo conoce, lo rechaza.</p></div>
+        <div class="step"><h3>Extrae</h3><p>Saldos, movimientos, meses sin intereses y datos de la tarjeta.</p></div>
+        <div class="step"><h3>Concilia</h3><p>Verifica que todo cuadre con los saldos y totales del propio banco.</p></div>
+        <div class="step"><h3>Redacta</h3><p>Construye la salida campo por campo y quita o seudonimiza cada dato personal.</p></div>
+        <div class="step fail"><h3>Escaneo final</h3><p>Revisa el JSON completo; ante cualquier sospecha sale con código 40.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2>Pensado para finanzas personales con IA</h2>
+      <p class="sub">Una herramienta de línea de comandos predecible, que un agente puede usar sin ver nunca el documento original.</p>
+      <div class="grid3">
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><h3>100 % local</h3><p>Sin red, sin telemetría y sin archivos temporales. El PDF nunca sale de tu máquina.</p></div>
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Falla cerrado</h3><p>Un escáner final revisa el JSON; si detecta algo sospechoso, no entrega nada.</p></div>
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/><path d="M17 17l2 2 3-4"/></svg></div><h3>Cifras verificadas</h3><p>Cada estado se concilia contra sus saldos y contra los totales que reporta el banco.</p></div>
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div><h3>Hecho para agentes</h3><p>JSON en stdout, errores en JSON, códigos de salida estables y JSON Schema publicado.</p></div>
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></div><h3>Tarjetas de crédito</h3><p>Pago mínimo, pago para no generar intereses, CAT, meses sin intereses y compras en dólares.</p></div>
+        <div class="card"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M17 8h4M19 6v4"/></svg></div><h3>Seudónimos estables</h3><p>La misma cuenta o contraparte recibe el mismo alias cada mes, sin revelar quién es.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="bancos">
+    <div class="wrap">
+      <h2>Bancos soportados</h2>
+      <p class="sub">Cada formato se valida con estados de cuenta reales antes de publicarse. Si un PDF no corresponde a un formato conocido, mxbank lo rechaza en lugar de adivinar.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Banco</th><th>Producto</th><th>Validación</th></tr></thead>
+          <tbody>
+            <tr><td><b>BBVA México</b></td><td>Cuenta de débito</td><td>4 estados reales · conciliación, totales y saldo por día exactos</td></tr>
+            <tr><td><b>BBVA México</b></td><td>Tarjeta de crédito</td><td>4 estados reales · conciliación y totales exactos</td></tr>
+            <tr><td><b>BanCoppel</b></td><td>Cuenta de débito digital</td><td>1 estado real · conciliación, totales y saldo por movimiento exactos</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:16px;color:var(--text-2)">¿Quieres otro banco? La guía para <a href="https://github.com/proteo5/mx-bank-statement-reader#agregar-un-banco">agregar uno</a> explica cómo estudiar el formato sin exponer datos.</p>
+    </div>
+  </section>
+
+  <section id="privacidad" class="alt">
+    <div class="wrap">
+      <h2>Qué pasa con cada dato</h2>
+      <p class="sub">La salida se construye a partir de una lista cerrada de campos: el encabezado del estado de cuenta no tiene a dónde ir.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dato</th><th>Tratamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Nombre, domicilio, RFC, CURP, número de cliente, sucursal</td><td><span class="tag rm">Se elimina</span></td></tr>
+            <tr><td>Tarjeta completa, CLABE, «Tarjeta Digital ***1234»</td><td><span class="tag rm">Se elimina</span></td></tr>
+            <tr><td>Claves de rastreo y referencias</td><td><span class="tag rm">Se elimina</span></td></tr>
+            <tr><td>Número de cuenta propia</td><td><span class="tag ps">Seudónimo</span> + últimos 4 dígitos (se omiten en modo estricto)</td></tr>
+            <tr><td>Personas y cuentas a las que transfieres</td><td><span class="tag ps">Seudónimo</span> nunca el nombre ni la cuenta</td></tr>
+            <tr><td>Conceptos libres de transferencias</td><td><span class="tag rm">Se omiten</span> o se incluyen redactados con <code>--include-concepts</code></td></tr>
+            <tr><td>Comercio, monto y fecha de cada movimiento</td><td><span class="tag ok">Se conserva</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);flex:none;margin-top:2px" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+        <p><b>Si tu nombre o tu colonia aparecen dentro de un movimiento</b> (por ejemplo en el nombre de una sucursal), se reemplazan por <code>[DATO]</code>. Y si después de todo el escáner final sospecha de algo, mxbank no emite el JSON y te dice qué campo revisar, nunca el valor.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="agentes">
+    <div class="wrap two">
+      <div>
+        <h2>Para agentes de IA</h2>
+        <p class="sub" style="margin-bottom:18px">El agente invoca mxbank como herramienta, lee el JSON y razona sobre tus movimientos sin ver nunca el PDF.</p>
+        <ul class="clean">
+          <li>Resultado en <b>stdout</b>, diagnósticos en <b>stderr</b>.</li>
+          <li>Códigos de salida documentados: 0 éxito, 11 contraseña, 20 banco no soportado, 40 PII detectada.</li>
+          <li><code>mxbank schema</code> publica el JSON Schema completo.</li>
+          <li>Reglas listas para copiar en <a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/AGENT.md">AGENT.md</a>.</li>
+        </ul>
+      </div>
+      <div class="term">
+        <div class="term-bar"><i></i><i></i><i></i><b>conversación con un agente</b></div>
+<pre><span class="p">Usuario:</span> ¿en qué gasté más este mes?
+
+<span class="p">Agente:</span>  mxbank extract tarjeta_sep.pdf   <span class="p"># exit 0</span>
+         agrupa los movimientos con amount &lt; 0,
+         excluye pagos a la tarjeta,
+         responde con las 5 categorías principales.</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalacion" class="alt">
+    <div class="wrap two">
+      <div>
+        <h2>Instalación</h2>
+        <p class="sub" style="margin-bottom:18px">Requiere Python 3.12 o superior y <a href="https://docs.astral.sh/uv/">uv</a>.</p>
+        <div class="label">Clonar e instalar</div>
+        <div class="cmd"><pre>git clone https://github.com/proteo5/mx-bank-statement-reader.git
+cd mx-bank-statement-reader
+uv tool install .</pre><button class="copy" type="button">Copiar</button></div>
+        <div class="label">Verificar</div>
+        <div class="cmd"><pre>mxbank banks</pre><button class="copy" type="button">Copiar</button></div>
+      </div>
+      <div>
+        <h2>Uso</h2>
+        <p class="sub" style="margin-bottom:18px">Los secretos se pasan por variable de entorno, nunca como argumento.</p>
+        <div class="label">Un estado de cuenta</div>
+        <div class="cmd"><pre>mxbank extract estado.pdf --pretty</pre><button class="copy" type="button">Copiar</button></div>
+        <div class="label">Toda una carpeta</div>
+        <div class="cmd"><pre>mxbank extract carpeta/ --ndjson &gt; movimientos.jsonl</pre><button class="copy" type="button">Copiar</button></div>
+        <div class="label">PDF con contraseña y alias estables entre meses</div>
+        <div class="cmd"><pre>mxbank extract estado.pdf --password-env MXBANK_PDF_PASSWORD --pseudonym-key-env MXBANK_KEY</pre><button class="copy" type="button">Copiar</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="#"><span class="logo" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 5h10M3 8h6M3 11h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span>mxbank</a>
+        <p style="margin:10px 0 0">Estados de cuenta mexicanos → JSON sin datos personales.</p>
+      </div>
+      <div>
+        <h4>Documentación</h4>
+        <ul>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader#readme">README</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/04-privacidad-y-redaccion.md">Privacidad y redacción</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/03-esquema-salida.md">Esquema de salida</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/AGENT.md">Guía para agentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Proyecto</h4>
+        <ul>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader">Código fuente</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/CHANGELOG.md">Cambios</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/issues">Reportar un problema</a></li>
+          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/LICENSE">Licencia Apache 2.0</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="legal">mxbank reduce drásticamente la información personal que compartes, pero ninguna herramienta automática es infalible: revisa la salida antes de enviarla a terceros. No es asesoría legal ni financiera. Este proyecto no está afiliado ni respaldado por BBVA México, BanCoppel ni ninguna otra institución financiera; los nombres de los bancos solo identifican los formatos que puede leer.</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll(".copy").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const text = btn.previousElementSibling.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Copiado";
+      } catch (e) {
+        btn.textContent = "Selecciona y copia";
+      }
+      setTimeout(() => (btn.textContent = "Copiar"), 1600);
+    });
+  });
+</script>
+</body>
+</html>

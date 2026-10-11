@@ -1,11 +1,24 @@
-# mx-bank-statement-reader
+<h1 align="center">mxbank · Tus estados de cuenta, listos para la IA, sin tus datos personales</h1>
 
-**Lee estados de cuenta de bancos mexicanos en PDF y entrega un JSON estructurado que no te identifica, listo para dárselo a una IA.**
+<p align="center">
+  <b>Lee estados de cuenta de bancos mexicanos en PDF y entrega un JSON estructurado que no te identifica.</b><br>
+  100 % local · cifras conciliadas · hecho para agentes de IA
+</p>
 
-[![CI](https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg)](https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml)
-![Versión](https://img.shields.io/badge/versión-0.1.0-blue)
-![Python](https://img.shields.io/badge/python-3.12%2B-blue)
-![Licencia](https://img.shields.io/badge/licencia-Apache%202.0-green)
+<p align="center">
+  <a href="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml"><img src="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/versión-0.1.0-blue" alt="Versión 0.1.0">
+  <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/licencia-Apache%202.0-green" alt="Licencia Apache 2.0">
+</p>
+
+<p align="center">
+  <a href="https://proteo5.github.io/mx-bank-statement-reader/">Sitio del proyecto</a> ·
+  <a href="#instalación">Instalación</a> ·
+  <a href="#uso">Uso</a> ·
+  <a href="#privacidad">Privacidad</a> ·
+  <a href="docs/AGENT.md">Guía para agentes de IA</a>
+</p>
 
 Subir un estado de cuenta a un asistente de IA expone tu nombre, domicilio, RFC, número de tarjeta, CLABE y los datos de las personas a las que les transfieres. `mxbank` lee el PDF **en tu computadora**, extrae saldos y movimientos, elimina todo lo que te identifica, valida que las cifras cuadren y solo entonces emite el JSON.
 
