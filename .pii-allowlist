@@ -1,0 +1,12 @@
+# Valores FICTICIOS usados en pruebas. Nunca agregar datos reales.
+PEGJ800101AB1
+4152313412345678
+012180001234567891
+# Ejemplos públicos usados en tests/test_check_no_pii.py
+032180000118359719
+4111111111111111
+GODE561231GR8
+CFE370814QI0
+GODE561231HDFRRN09
+alguien@gmail.com
+contacto@banco.com.mx

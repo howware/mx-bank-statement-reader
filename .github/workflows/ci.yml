@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Dependencias
+        run: uv sync
+
+      - name: Guardia de datos personales (todos los archivos versionados)
+        run: git ls-files -z | xargs -0 uv run python tools/check_no_pii.py
+
+      - name: Lint
+        run: uvx ruff@0.6.9 check src tests tools
+
+      - name: Pruebas
+        run: uv run pytest -q

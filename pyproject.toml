@@ -1,0 +1,56 @@
+[project]
+name = "mx-bank-statement-reader"
+version = "0.1.0"
+description = "CLI orientada a IA: estados de cuenta bancarios mexicanos (PDF) a JSON sin datos personales"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Alfredo Pinto" }]
+requires-python = ">=3.12"
+keywords = ["mexico", "bank-statement", "estado-de-cuenta", "pdf", "privacy", "pii", "llm", "ai-agents", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Natural Language :: Spanish",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Security",
+]
+dependencies = [
+    "pdfplumber>=0.11",
+    "pydantic>=2.7",
+    "typer>=0.12",
+]
+
+[project.urls]
+Repository = "https://github.com/proteo5/mx-bank-statement-reader"
+Changelog = "https://github.com/proteo5/mx-bank-statement-reader/blob/main/CHANGELOG.md"
+
+[project.scripts]
+mxbank = "mxbank.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "reportlab>=4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mxbank"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]

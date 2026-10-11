@@ -1,0 +1,14 @@
+# Estados de cuenta reales: NUNCA versionar
+corpus/
+docs/Estados/
+*.pdf
+!tests/**/*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
