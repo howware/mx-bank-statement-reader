@@ -171,7 +171,7 @@ Cómo se garantiza:
 
 Modelo de amenaza, perfiles y riesgos residuales: [docs/04-privacidad-y-redaccion.md](docs/04-privacidad-y-redaccion.md).
 
-> **Aviso**: `mxbank` reduce drásticamente la información personal que compartes, pero ninguna herramienta automática es infalible. Revisa la salida antes de enviarla a terceros (`mxbank audit` ayuda). No es asesoría legal ni financiera.
+> **Aviso**: `mxbank` se ofrece **tal cual, sin garantías**, y reduce drásticamente la información personal que compartes, pero ninguna herramienta automática es infalible. Revisa la salida antes de enviarla a terceros (`mxbank audit` ayuda) y verifica las cifras contra el estado de cuenta original. No es asesoría legal, financiera ni fiscal. **Si procesas estados de cuenta de otras personas, cumplir la ley de protección de datos es tu responsabilidad.** Lee el [aviso legal y advertencias de uso](AVISO-LEGAL.md) completo.
 
 ## Uso con agentes de IA
 
@@ -255,6 +255,7 @@ docs/               análisis, especificación, esquema, privacidad y layouts po
 | [AGENT.md](docs/AGENT.md) | Guía para agentes de IA |
 | Layouts | [BBVA débito](docs/bancos/bbva-cuenta.md) · [BBVA crédito](docs/bancos/bbva-credito.md) · [BanCoppel débito](docs/bancos/bancoppel-cuenta.md) |
 | [CHANGELOG](CHANGELOG.md) | Historial de versiones |
+| [Aviso legal](AVISO-LEGAL.md) · [Seguridad](SECURITY.md) | Límites de responsabilidad, advertencias de uso y reporte privado de problemas |
 
 ## Hoja de ruta
 
@@ -266,4 +267,4 @@ docs/               análisis, especificación, esquema, privacidad y layouts po
 
 ## Licencia
 
-[Apache 2.0](LICENSE). Este proyecto no está afiliado ni respaldado por BBVA México, BanCoppel ni ninguna otra institución financiera; los nombres de los bancos solo identifican los formatos que la herramienta puede leer. Ver [NOTICE](NOTICE).
+[Apache 2.0](LICENSE): se distribuye tal cual, sin garantías, y el autor no es responsable por daños derivados de su uso. Este proyecto no está afiliado ni respaldado por BBVA México, BanCoppel ni ninguna otra institución financiera; los nombres de los bancos solo identifican los formatos que la herramienta puede leer. Ver [NOTICE](NOTICE), el [aviso legal y advertencias de uso](AVISO-LEGAL.md) y cómo [reportar un problema de privacidad](SECURITY.md) sin exponer datos.
