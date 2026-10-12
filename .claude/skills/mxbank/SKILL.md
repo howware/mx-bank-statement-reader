@@ -23,6 +23,7 @@ mxbank extract estado.pdf               # un estado → un objeto JSON
 mxbank extract carpeta/ --ndjson        # varios → un JSON por línea
 mxbank detect estado.pdf                # solo banco y producto
 mxbank schema                           # JSON Schema completo
+mxbank records estado.json --by person:x # registros comunes para una memoria compartida (docs/AGENT.md)
 ```
 
 Si `mxbank` no está en el PATH: `uv tool install git+https://github.com/howware/mx-bank-statement-reader` (pide permiso antes de instalar), o desde un clon del repo: `uv run --project <ruta-del-repo> mxbank …`.

@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/howware/mx-bank-statement-reader/actions/workflows/ci.yml"><img src="https://github.com/howware/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/versión-0.2.0-blue" alt="Versión 0.2.0">
+  <img src="https://img.shields.io/badge/versión-0.3.0-blue" alt="Versión 0.3.0">
   <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python 3.12+">
   <img src="https://img.shields.io/badge/licencia-Apache%202.0-green" alt="Licencia Apache 2.0">
 </p>

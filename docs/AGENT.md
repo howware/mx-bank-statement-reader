@@ -21,6 +21,7 @@ mxbank detect estado.pdf                  # banco, producto y confianza, sin ext
 mxbank schema                             # JSON Schema de la salida
 mxbank banks                              # bancos y productos soportados
 mxbank audit archivo.json                 # buscar PII residual en cualquier texto/JSON
+mxbank records estado.json --by person:x  # registros comunes para la memoria (project-memory)
 ```
 
 Opciones útiles de `extract`: `--privacy strict`, `--include-concepts`, `--pseudonym-key-env VAR` (seudónimos estables entre meses), `--password-env VAR` o `--password-stdin` (PDF protegido), `--fail-on-unbalanced`.
@@ -56,6 +57,25 @@ Para guardar movimientos en una base propia (p. ej. SQLite de solo agregado) y p
 3. Usa `statement_id` para saber si un estado ya se importó, e `installment_plans[].id` para seguir una compra a meses de un mes a otro: cambian la parcialidad y el saldo, no el id.
 4. Dos movimientos idénticos el mismo día tienen ids distintos: no los fusiones.
 5. Si cambias o pierdes la llave, los ids nuevos no coincidirán con los guardados. Trátala como un secreto y respáldala.
+
+## Guardar en una memoria compartida por varios howwares
+
+Cuando varios howwares usan la misma memoria ([project-memory](https://github.com/howware/long-term-memory-for-AI)),
+todos guardan un estado de cuenta **de la misma forma**, para que no se dupliquen ni se contradigan:
+
+```bash
+mxbank records estado.json --by person:ana --tz -07:00   # {"ok", "statements", "documents": [...]}
+```
+
+Cada elemento de `documents` es un documento para `memory.py write`: la cuenta (`account:<account_ref>`), el evento
+`statement_imported` (llave `statement_id`), un evento `transaction` por movimiento (llave `transactions[].id`) con
+monto en centavos y fecha a mediodía local, y los planes a meses. Solo lo que dice el estado; ninguna
+interpretación (categoría, cliente, renta). Cada howware escribe además, aparte, su propia lectura como vínculos;
+la memoria agrega a un movimiento ya guardado los vínculos que le falten (project-memory 0.4.0+).
+
+Los howwares escritos en Python pueden usar directamente el módulo [`src/mxbank/records.py`](../src/mxbank/records.py)
+(solo biblioteca estándar, Python 3.9+), copiado tal cual como `mxbank_records.py` junto a sus herramientas. La copia
+no se edita: se actualiza desde aquí, y sus pruebas comprueban que siga igual.
 
 ## Ejemplo de uso en un agente
 

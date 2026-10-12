@@ -3,6 +3,17 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 El esquema JSON de salida tiene su propia versión (`schema_version`).
 
+## [0.3.0] - 2026-10-11
+
+### Añadido
+
+- `mxbank records`: convierte la salida de `extract` en los **registros comunes para la memoria**
+  (project-memory): la cuenta, el estado, los movimientos y los planes a meses, con los ids estables como llaves,
+  montos en centavos y fechas a mediodía local, sin interpretación. Varios howwares que comparten una memoria
+  guardan así el mismo estado de la misma forma y sin duplicarlo (docs/AGENT.md).
+- `src/mxbank/records.py`: el mismo convertidor como módulo de biblioteca estándar (Python 3.9+), para que los
+  howwares lo copien junto a sus herramientas.
+
 ## [0.2.0] - 2026-10-10
 
 Esquema de salida **1.1** (cambio aditivo; los consumidores de 1.0 siguen funcionando).

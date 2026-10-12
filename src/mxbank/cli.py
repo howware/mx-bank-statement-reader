@@ -5,12 +5,14 @@ from __future__ import annotations
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated
 
 import typer
 
 from . import SCHEMA_VERSION, __version__
+from . import records as memory_records
 from .errors import MxBankError, ResidualPII, UsageError
 from .models.statement import Statement
 from .parsers import PARSERS
@@ -117,6 +119,48 @@ def extract(
             file=sys.stderr,
         )
     _run(files, lambda f: extract_file(f, opts, pseudo), pretty or sys.stdout.isatty(), ndjson, out)
+
+
+def _local_offset() -> str:
+    z = datetime.now().astimezone().strftime("%z")
+    return f"{z[:3]}:{z[3:]}"
+
+
+@app.command()
+def records(
+    sources: Annotated[list[str], typer.Argument(help="JSON o NDJSON de `extract`, o - para stdin")],
+    by: Annotated[str, typer.Option(help="Entidad que importa en la memoria, p. ej. person:ana")],
+    tz: Annotated[str | None, typer.Option(help="Desfase local de las fechas, p. ej. -07:00 (default: el del equipo)")] = None,
+    pretty: Annotated[bool, typer.Option(help="JSON indentado")] = False,
+) -> None:
+    """Convierte la salida de `extract` en registros comunes para la memoria (project-memory), sin interpretarlos."""
+    try:
+        statements = []
+        for source in sources:
+            try:
+                text = (sys.stdin.read() if source == "-" else Path(source).read_text(encoding="utf-8")).strip()
+            except OSError as exc:
+                raise UsageError(f"No pude leer {source}: {exc.strerror or exc}") from None
+            try:
+                docs = [json.loads(text)] if text.startswith("{") and "\n{" not in text else \
+                    [json.loads(line) for line in text.splitlines() if line.strip()]
+            except json.JSONDecodeError as exc:
+                raise UsageError(f"{source} no es JSON ni NDJSON de mxbank (línea {exc.lineno}).") from None
+            for doc in docs:
+                statements += doc if isinstance(doc, list) else [doc]
+        documents, infos = [], []
+        for st in statements:
+            try:
+                document, info = memory_records.memory_document(st, by, tz or _local_offset())
+            except memory_records.RecordsError as exc:
+                raise UsageError(str(exc)) from None
+            documents.append(document)
+            infos.append(info)
+    except MxBankError as exc:
+        _emit(exc.to_dict(), pretty)
+        raise typer.Exit(exc.exit_code) from None
+    _emit({"ok": True, "records_version": memory_records.RECORDS_VERSION, "statements": infos,
+           "documents": documents}, pretty or sys.stdout.isatty())
 
 
 @app.command()
