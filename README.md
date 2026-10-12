@@ -26,6 +26,11 @@ Subir un estado de cuenta a un asistente de IA expone tu nombre, domicilio, RFC,
 mxbank extract estado.pdf > estado.json      # este archivo ya se puede compartir con una IA
 ```
 
+> **Un adaptador de [howware](https://howware.org/es/).** Los howwares (tu saber hacer puesto a trabajar con IA,
+> sin app) lo usan para leer estados de cuenta: [finanzas-personales](https://github.com/howware/finanzas-personales)
+> y la facturación para independientes, en construcción. No tiene reglas de ningún trabajo: entrega movimientos
+> conciliados; qué significa cada uno lo decide el howware con su dueño.
+
 ---
 
 ## Contenido
