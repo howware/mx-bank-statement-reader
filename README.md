@@ -27,8 +27,9 @@ mxbank extract estado.pdf > estado.json      # este archivo ya se puede comparti
 ```
 
 > **Un adaptador de [howware](https://howware.org/es/).** Los howwares (tu saber hacer puesto a trabajar con IA,
-> sin app) lo usan para leer estados de cuenta: [finanzas-personales](https://github.com/howware/finanzas-personales)
-> y [facturacion](https://github.com/howware/facturacion), la facturación para independientes. No tiene reglas de ningún trabajo: entrega movimientos
+> sin app) lo usan para leer estados de cuenta: [finanzas-personales](https://github.com/howware/finanzas-personales),
+> [facturacion](https://github.com/howware/facturacion), la facturación para independientes, y
+> [arrendamiento](https://github.com/howware/arrendamiento), las rentas para caseros. No tiene reglas de ningún trabajo: entrega movimientos
 > conciliados; qué significa cada uno lo decide el howware con su dueño.
 
 ---
