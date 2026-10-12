@@ -4,7 +4,7 @@
 
 Si encuentras una vulnerabilidad o un caso en el que `mxbank` **deja pasar información personal** en su salida, repórtalo **de forma privada**:
 
-1. Ve a la pestaña **Security → Report a vulnerability** del repositorio (GitHub Security Advisories), o abre directamente https://github.com/proteo5/mx-bank-statement-reader/security/advisories/new.
+1. Ve a la pestaña **Security → Report a vulnerability** del repositorio (GitHub Security Advisories), o abre directamente https://github.com/howware/mx-bank-statement-reader/security/advisories/new.
 2. Describe el problema **sin incluir datos reales**:
    - banco, producto y versión de `mxbank` (`mxbank version`);
    - qué campo del JSON contenía la información (`error.details` o la ruta, p. ej. `transactions[3].description`);

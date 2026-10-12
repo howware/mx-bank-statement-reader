@@ -183,7 +183,7 @@
       <a href="#bancos">Bancos</a>
       <a href="#privacidad">Privacidad</a>
       <a href="#instalacion">Instalación</a>
-      <a class="gh" href="https://github.com/proteo5/mx-bank-statement-reader">GitHub ↗</a>
+      <a class="gh" href="https://github.com/howware/mx-bank-statement-reader">GitHub ↗</a>
     </nav>
   </div>
 </header>
@@ -197,7 +197,7 @@
         <p class="lead">mxbank lee estados de cuenta de bancos mexicanos en PDF <b>en tu computadora</b>, extrae saldos y movimientos, elimina todo lo que te identifica y entrega un JSON que ya puedes compartir con cualquier asistente.</p>
         <div class="cta">
           <a class="btn primary" href="#instalacion">Instalar</a>
-          <a class="btn" href="https://github.com/proteo5/mx-bank-statement-reader">Ver en GitHub</a>
+          <a class="btn" href="https://github.com/howware/mx-bank-statement-reader">Ver en GitHub</a>
         </div>
         <div class="facts"><span>100 % local</span><span>Cifras conciliadas</span><span>Falla cerrado ante la duda</span><span>Apache 2.0</span></div>
       </div>
@@ -294,7 +294,7 @@
           </tbody>
         </table>
       </div>
-      <p style="margin-top:16px;color:var(--text-2)">¿Quieres otro banco? La guía para <a href="https://github.com/proteo5/mx-bank-statement-reader#agregar-un-banco">agregar uno</a> explica cómo estudiar el formato sin exponer datos.</p>
+      <p style="margin-top:16px;color:var(--text-2)">¿Quieres otro banco? La guía para <a href="https://github.com/howware/mx-bank-statement-reader#agregar-un-banco">agregar uno</a> explica cómo estudiar el formato sin exponer datos.</p>
     </div>
   </section>
 
@@ -332,7 +332,7 @@
           <li>Resultado en <b>stdout</b>, diagnósticos en <b>stderr</b>.</li>
           <li>Códigos de salida documentados: 0 éxito, 11 contraseña, 20 banco no soportado, 40 PII detectada.</li>
           <li><code>mxbank schema</code> publica el JSON Schema completo.</li>
-          <li>Reglas listas para copiar en <a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/AGENT.md">AGENT.md</a>.</li>
+          <li>Reglas listas para copiar en <a href="https://github.com/howware/mx-bank-statement-reader/blob/main/docs/AGENT.md">AGENT.md</a>.</li>
         </ul>
       </div>
       <div class="term">
@@ -350,10 +350,10 @@
         <h3 style="display:block">¿Usas Claude Code? Instala el skill <code>mxbank</code></h3>
         <p style="margin:0 0 6px;color:var(--text-2)">Claude Code lo carga solo cuando le pides revisar, resumir o graficar un estado de cuenta. Así la sesión sabe usar <code>mxbank</code> en lugar de abrir el PDF, qué movimientos no son gasto (pagos a la tarjeta, traslados a meses), cómo detectar cargos recurrentes y cómo verificar las sumas contra el banco. Dentro de un clon del repositorio ya está disponible; para tenerlo en todas tus sesiones:</p>
         <div class="label">macOS / Linux</div>
-        <div class="cmd wrapcmd"><pre>mkdir -p ~/.claude/skills/mxbank && curl -fsSL https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -o ~/.claude/skills/mxbank/SKILL.md</pre><button class="copy" type="button">Copiar</button></div>
+        <div class="cmd wrapcmd"><pre>mkdir -p ~/.claude/skills/mxbank && curl -fsSL https://raw.githubusercontent.com/howware/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -o ~/.claude/skills/mxbank/SKILL.md</pre><button class="copy" type="button">Copiar</button></div>
         <div class="label">Windows (PowerShell)</div>
-        <div class="cmd wrapcmd"><pre>New-Item -ItemType Directory -Force "$HOME\.claude\skills\mxbank" | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -OutFile "$HOME\.claude\skills\mxbank\SKILL.md"</pre><button class="copy" type="button">Copiar</button></div>
-        <p style="margin:6px 0 0;color:var(--text-2)">Reinicia Claude Code y pide, por ejemplo: <i>«analiza mis gastos del estado de cuenta tarjeta_sep.pdf»</i>. Para actualizarlo, vuelve a ejecutar el mismo comando. <a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/.claude/skills/mxbank/SKILL.md">Ver el skill</a></p>
+        <div class="cmd wrapcmd"><pre>New-Item -ItemType Directory -Force "$HOME\.claude\skills\mxbank" | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/howware/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -OutFile "$HOME\.claude\skills\mxbank\SKILL.md"</pre><button class="copy" type="button">Copiar</button></div>
+        <p style="margin:6px 0 0;color:var(--text-2)">Reinicia Claude Code y pide, por ejemplo: <i>«analiza mis gastos del estado de cuenta tarjeta_sep.pdf»</i>. Para actualizarlo, vuelve a ejecutar el mismo comando. <a href="https://github.com/howware/mx-bank-statement-reader/blob/main/.claude/skills/mxbank/SKILL.md">Ver el skill</a></p>
       </div>
     </div>
   </section>
@@ -364,7 +364,7 @@
         <h2>Instalación</h2>
         <p class="sub" style="margin-bottom:18px">Requiere Python 3.12 o superior y <a href="https://docs.astral.sh/uv/">uv</a>.</p>
         <div class="label">Clonar e instalar</div>
-        <div class="cmd"><pre>git clone https://github.com/proteo5/mx-bank-statement-reader.git
+        <div class="cmd"><pre>git clone https://github.com/howware/mx-bank-statement-reader.git
 cd mx-bank-statement-reader
 uv tool install .</pre><button class="copy" type="button">Copiar</button></div>
         <div class="label">Verificar</div>
@@ -394,27 +394,27 @@ uv tool install .</pre><button class="copy" type="button">Copiar</button></div>
       <div>
         <h4>Documentación</h4>
         <ul>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader#readme">README</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/04-privacidad-y-redaccion.md">Privacidad y redacción</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/03-esquema-salida.md">Esquema de salida</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/docs/AGENT.md">Guía para agentes</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader#readme">README</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/docs/04-privacidad-y-redaccion.md">Privacidad y redacción</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/docs/03-esquema-salida.md">Esquema de salida</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/docs/AGENT.md">Guía para agentes</a></li>
           <li><a href="#skill">Skill para Claude Code</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/AGENTS.md">Desarrollar con IA (AGENTS.md)</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/AGENTS.md">Desarrollar con IA (AGENTS.md)</a></li>
         </ul>
       </div>
       <div>
         <h4>Proyecto</h4>
         <ul>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader">Código fuente</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/CHANGELOG.md">Cambios</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/issues">Reportar un error</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/LICENSE">Licencia Apache 2.0</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/AVISO-LEGAL.md">Aviso legal</a></li>
-          <li><a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/SECURITY.md">Reportar un problema de privacidad</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader">Código fuente</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/CHANGELOG.md">Cambios</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/issues">Reportar un error</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/LICENSE">Licencia Apache 2.0</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/AVISO-LEGAL.md">Aviso legal</a></li>
+          <li><a href="https://github.com/howware/mx-bank-statement-reader/blob/main/SECURITY.md">Reportar un problema de privacidad</a></li>
         </ul>
       </div>
     </div>
-    <p class="legal">mxbank se ofrece <b>tal cual, sin garantías</b>; el autor no es responsable por daños derivados de su uso. Reduce drásticamente la información personal que compartes, pero ninguna herramienta automática es infalible: revisa la salida antes de enviarla a terceros y verifica las cifras contra tu estado de cuenta original. No es asesoría legal, financiera ni fiscal. Si procesas estados de cuenta de otras personas, cumplir la ley de protección de datos es tu responsabilidad. Este proyecto no está afiliado ni respaldado por BBVA México, BanCoppel ni ninguna otra institución financiera; los nombres de los bancos solo identifican los formatos que puede leer. <a href="https://github.com/proteo5/mx-bank-statement-reader/blob/main/AVISO-LEGAL.md">Aviso legal completo</a>.</p>
+    <p class="legal">mxbank se ofrece <b>tal cual, sin garantías</b>; el autor no es responsable por daños derivados de su uso. Reduce drásticamente la información personal que compartes, pero ninguna herramienta automática es infalible: revisa la salida antes de enviarla a terceros y verifica las cifras contra tu estado de cuenta original. No es asesoría legal, financiera ni fiscal. Si procesas estados de cuenta de otras personas, cumplir la ley de protección de datos es tu responsabilidad. Este proyecto no está afiliado ni respaldado por BBVA México, BanCoppel ni ninguna otra institución financiera; los nombres de los bancos solo identifican los formatos que puede leer. <a href="https://github.com/howware/mx-bank-statement-reader/blob/main/AVISO-LEGAL.md">Aviso legal completo</a>.</p>
   </div>
 </footer>
 

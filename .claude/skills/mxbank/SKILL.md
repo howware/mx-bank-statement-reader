@@ -25,7 +25,7 @@ mxbank detect estado.pdf                # solo banco y producto
 mxbank schema                           # JSON Schema completo
 ```
 
-Si `mxbank` no está en el PATH: `uv tool install git+https://github.com/proteo5/mx-bank-statement-reader` (pide permiso antes de instalar), o desde un clon del repo: `uv run --project <ruta-del-repo> mxbank …`.
+Si `mxbank` no está en el PATH: `uv tool install git+https://github.com/howware/mx-bank-statement-reader` (pide permiso antes de instalar), o desde un clon del repo: `uv run --project <ruta-del-repo> mxbank …`.
 
 - **PDF con contraseña** (código 11): pide al usuario que la ponga en una variable de entorno y usa `--password-env NOMBRE`. Nunca la pases como argumento ni la escribas en la conversación.
 - **Varios meses o importación**: usa **siempre la misma llave** (`--pseudonym-key-env NOMBRE`) para que la misma cuenta, contraparte, movimiento y plan a meses tengan el mismo alias e id en todas las ejecuciones. Sin llave, la CLI avisa en stderr y los ids no sirven fuera de esa ejecución.

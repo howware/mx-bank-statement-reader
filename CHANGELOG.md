@@ -37,5 +37,5 @@ Primera versión pública. Esquema de salida **1.0**.
 - Herramientas de desarrollo: volcado enmascarado de layouts (`tools/layout_dump.py`), métricas sobre PDFs reales sin exponer contenido (`tools/corpus_check.py`) y guardia de git contra PDFs y datos personales (`tools/check_no_pii.py`).
 - PDFs sintéticos con datos ficticios para las pruebas.
 
-[0.2.0]: https://github.com/proteo5/mx-bank-statement-reader/releases/tag/v0.2.0
-[0.1.0]: https://github.com/proteo5/mx-bank-statement-reader/releases/tag/v0.1.0
+[0.2.0]: https://github.com/howware/mx-bank-statement-reader/releases/tag/v0.2.0
+[0.1.0]: https://github.com/howware/mx-bank-statement-reader/releases/tag/v0.1.0

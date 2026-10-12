@@ -25,8 +25,8 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/proteo5/mx-bank-statement-reader"
-Changelog = "https://github.com/proteo5/mx-bank-statement-reader/blob/main/CHANGELOG.md"
+Repository = "https://github.com/howware/mx-bank-statement-reader"
+Changelog = "https://github.com/howware/mx-bank-statement-reader/blob/main/CHANGELOG.md"
 
 [project.scripts]
 mxbank = "mxbank.cli:main"

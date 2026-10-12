@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml"><img src="https://github.com/proteo5/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/howware/mx-bank-statement-reader/actions/workflows/ci.yml"><img src="https://github.com/howware/mx-bank-statement-reader/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/versión-0.2.0-blue" alt="Versión 0.2.0">
   <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python 3.12+">
   <img src="https://img.shields.io/badge/licencia-Apache%202.0-green" alt="Licencia Apache 2.0">
 </p>
 
 <p align="center">
-  <a href="https://proteo5.github.io/mx-bank-statement-reader/">Sitio del proyecto</a> ·
+  <a href="https://howware.org/mx-bank-statement-reader/">Sitio del proyecto</a> ·
   <a href="#instalación">Instalación</a> ·
   <a href="#uso">Uso</a> ·
   <a href="#privacidad">Privacidad</a> ·
@@ -65,7 +65,7 @@ Si un PDF no corresponde a un formato soportado, `mxbank` lo rechaza con el cód
 Requiere Python 3.12+ y [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone https://github.com/proteo5/mx-bank-statement-reader.git
+git clone https://github.com/howware/mx-bank-statement-reader.git
 cd mx-bank-statement-reader
 uv sync
 uv run mxbank --help
@@ -193,12 +193,12 @@ El repositorio incluye el skill [`mxbank`](.claude/skills/mxbank/SKILL.md). Clau
 
   ```bash
   # macOS / Linux
-  mkdir -p ~/.claude/skills/mxbank && curl -fsSL https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -o ~/.claude/skills/mxbank/SKILL.md
+  mkdir -p ~/.claude/skills/mxbank && curl -fsSL https://raw.githubusercontent.com/howware/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -o ~/.claude/skills/mxbank/SKILL.md
   ```
 
   ```powershell
   # Windows (PowerShell)
-  New-Item -ItemType Directory -Force "$HOME\.claude\skills\mxbank" | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/proteo5/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -OutFile "$HOME\.claude\skills\mxbank\SKILL.md"
+  New-Item -ItemType Directory -Force "$HOME\.claude\skills\mxbank" | Out-Null; Invoke-WebRequest https://raw.githubusercontent.com/howware/mx-bank-statement-reader/main/.claude/skills/mxbank/SKILL.md -OutFile "$HOME\.claude\skills\mxbank\SKILL.md"
   ```
 
   Reinicia Claude Code y pide, por ejemplo: *"analiza mis gastos del estado de cuenta `~/estados/tarjeta_sep.pdf`"*. Para actualizar el skill, vuelve a ejecutar el mismo comando.
